@@ -8,21 +8,17 @@
         "name": "Farid Adam",
         "email": "faridibin@gmail.com"
     }],
-    "require": {
-        "php": ">=5.4"
-    },
-    "require-dev": {
-        "laravel/lumen-framework": "5.5.*",
-        "laravel/laravel": "5.5.*",
-        "barryvdh/laravel-ide-helper": "^2.4"
-    },
+    "require": {},
     "autoload": {
         "psr-4": {
-            "Faridibin\\LaravelJsonResponse\\": "src/Faridibin/LaravelJsonResponse/"
-        },
-        "files": [
-            "src/Faridibin/LaravelJsonResponse/Helpers/helpers.php"
-        ]
+            "Faridibin\\LaravelJsonResponse\\": "src/"
+        }
     },
-    "minimum-stability": "stable"
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Faridibin\\LaravelJsonResponse\\LaravelJsonResponseServiceProvider"
+            ]
+        }
+    }
 }
