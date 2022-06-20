@@ -1,9 +1,9 @@
 <?php
 
-namespace Faridibin\LaravelJsonResponse\Exceptions;
+namespace Faridibin\LaravelApiResponse\Exceptions;
 
-use Faridibin\LaravelJsonResponse\Middleware\OutputJsonResponse;
-use Faridibin\LaravelJsonResponse\Traits\HasJson;
+use Faridibin\LaravelApiResponse\Middleware\OutputJsonResponse;
+use Faridibin\LaravelApiResponse\Traits\HasJson;
 use Illuminate\Support\Str;
 use ReflectionClass;
 
