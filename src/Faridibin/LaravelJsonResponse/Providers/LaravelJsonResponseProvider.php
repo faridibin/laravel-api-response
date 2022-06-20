@@ -1,11 +1,11 @@
 <?php
 
-namespace Faridibin\LaravelJsonResponse\Providers;
+namespace Faridibin\LaravelApiResponsex\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Faridibin\LaravelJsonResponse\JsonResponse;
+use Faridibin\LaravelApiResponse\JsonResponse;
 
-class LaravelJsonResponseProvider extends ServiceProvider
+class LaravelApiJsonResponseProvider extends ServiceProvider
 {
 
     /**
@@ -13,7 +13,7 @@ class LaravelJsonResponseProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot ()
+    public function boot()
     {
         $this->publishes([__DIR__ . '/../../../config/config.php' => config_path(LARAVEL_JSON_RESPONSE_CONFIG . '.php')]);
 
@@ -27,10 +27,11 @@ class LaravelJsonResponseProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register ()
+    public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../../../config/config.php', LARAVEL_JSON_RESPONSE_CONFIG
+            __DIR__ . '/../../../config/config.php',
+            LARAVEL_JSON_RESPONSE_CONFIG
         );
     }
 }
