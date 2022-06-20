@@ -188,7 +188,7 @@ Exceptions can be caught by using the config file:
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
-use Faridibin\LaravelJsonResponse\JsonResponse;
+use Faridibin\LaravelApiResponse\JsonResponse;
 
 return [
     'exceptions' => [
