@@ -1,7 +1,7 @@
 {
-    "name": "faridibin/laravel-api-json-response",
+    "name": "faridibin/laravel-api-response",
     "description": "Easy Api responses for laravel.",
-    "keywords": ["laravel", "eloquent", "json"],
+    "keywords": ["laravel", "api", "response", "json", "xml"],
     "type": "Extension",
     "license": "MIT",
     "authors": [{
@@ -11,7 +11,7 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "Faridibin\\LaravelApiJsonResponse\\": "src/"
+            "Faridibin\\LaravelApiResponse\\": "src/"
         },
         "files": [
             "src/Helpers/constants.php",
@@ -21,7 +21,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Faridibin\\LaravelApiJsonResponse\\ApiJsonResponseServiceProvider"
+                "Faridibin\\LaravelApiResponse\\ApiResponseServiceProvider"
             ]
         }
     }
