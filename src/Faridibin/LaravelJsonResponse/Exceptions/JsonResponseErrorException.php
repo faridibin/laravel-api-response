@@ -1,6 +1,6 @@
 <?php
 
-namespace Faridibin\LaravelJsonResponse\Exceptions;
+namespace Faridibin\LaravelApiResponse\Exceptions;
 
 use Illuminate\Http\Response;
 use Throwable;
