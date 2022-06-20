@@ -1,7 +1,9 @@
 <?php
 
-use Faridibin\LaravelApiJsonResponse\Exceptions\ExceptionHandler;
+use Faridibin\LaravelApiResponse\Exceptions\ExceptionHandler;
 use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 return [
 
@@ -23,6 +25,10 @@ return [
     */
     'uri_case' => 'snake',
 
+    // TODO: Pagination; use model name as resource name
+
+    // TODO: Trace; show exception stack trace
+
     /*
     |--------------------------------------------------------------------------
     | Handling Exceptions
@@ -34,12 +40,12 @@ return [
     |
     */
     'exceptions' => [
-        \Illuminate\Database\Eloquent\ModelNotFoundException::class => [
+        ModelNotFoundException::class => [
             'setMessage' => 'No query results for model found!',
             'setStatusCode' => Response::HTTP_NOT_FOUND
         ],
 
-        \Illuminate\Validation\ValidationException::class => function (\Illuminate\Validation\ValidationException $e, ExceptionHandler $handler) {
+        ValidationException::class => function (ValidationException $e, ExceptionHandler $handler) {
             $handler
                 ->mergeErrors($e->errors())
                 ->setStatusCode($e->status ?? Response::HTTP_UNPROCESSABLE_ENTITY);
