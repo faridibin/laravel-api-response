@@ -15,3 +15,5 @@ define('LARAVEL_API_RESPONSE_KEY', 'laravel-api-response');
 define('LARAVEL_API_RESPONSE_AUTH_HEADER', 'Authorization');
 define('LARAVEL_API_RESPONSE_URI_CASES', ['camel', 'slug', 'snake', 'spinal']);
 define('LARAVEL_API_RESPONSE_URI_CASE', 'snake');
+define('LARAVEL_API_RESPONSE_FORMATS', ['json', 'xml', 'yaml']);
+define('LARAVEL_API_RESPONSE_FORMAT', 'json');
