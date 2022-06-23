@@ -64,7 +64,7 @@ class ExceptionHandler extends \Exception
      */
     public function __construct(\Exception $exception = null, int $statusCode = null)
     {
-        $this->exceptions = config(LARAVEL_API_RESPONSE_CONFIG . '.exceptions', []);
+        $this->exceptions = config(LARAVEL_API_RESPONSE_CONFIG . '.exceptions.handlers', []);
         $this->exception = $exception;
 
         if (isset($statusCode)) {
@@ -87,43 +87,12 @@ class ExceptionHandler extends \Exception
 
     /**
      * Handles the exceptions.
-     * Sets whether or not the handler failed and allows
-     * for makeJsonResponse() to run.
+     * Sets whether or not the handler failed.
      *
      * @return bool
      */
     public function handle(): bool
     {
-        // foreach ($exceptions as $exception => $case) {
-
-        //     if (!is_a($this->exception, $exception)) {
-        //         continue;
-        //     }
-
-        //     $ran = true;
-
-        //     if (is_array($case) && isset($case['error'])) {
-
-        //         foreach ($case as $key => $value) {
-        //             if (!is_callable([$this->json(), $key])) {
-        //                 continue;
-        //             }
-        //             call_user_func_array([$this->json(), $key], is_array($value) ? $value : [$value]);
-        //         }
-        //     } elseif (is_array($case)) {
-
-        //         $this->json()->error(...$case);
-        //     } elseif (is_callable($case)) {
-
-        //         if ($case($this->exception, $this->json())) {
-        //             $result = true;
-        //         }
-        //     } else {
-
-        //         $this->json()->error($case);
-        //     }
-        // }
-
         foreach ($this->exceptions as $exception => $case) {
             if (!is_a($this->exception, $exception)) {
                 continue;
@@ -135,9 +104,6 @@ class ExceptionHandler extends \Exception
                 foreach ($case as $key => $value) {
                     if (is_callable([$this, $key])) {
                         call_user_func_array([$this, $key], is_array($value) ? $value : [$value]);
-                    } else {
-                        // TODO: Implement error() method.
-                        // dd(...$value);
                     }
                 }
             }
@@ -150,12 +116,10 @@ class ExceptionHandler extends \Exception
             $this->$method($this->exception);
         }
 
-        // TODO: Handle trace.
-        // dd($this->exceptions, $exception);
-        // shouldTrace()
-        // if (env('APP_DEBUG')) {
-        //     $this->mergeErrors(['trace' => $this->exception->getTrace()]);
-        // }
+        // Check for exception tracing.
+        if ($this->shouldTrace()) {
+            $this->mergeErrors(['trace' => $this->exception->getTrace()]);
+        }
 
         return false;
     }
@@ -242,12 +206,27 @@ class ExceptionHandler extends \Exception
     }
 
     /**
-     * Returns whether or not the handler failed
+     * Returns whether or not the handler failed.
      *
      * @return bool
      */
     public function failed()
     {
         return $this->failed;
+    }
+
+    /**
+     * Returns whether or not the exception should
+     * be traced.
+     *
+     * @return bool
+     */
+    public function shouldTrace()
+    {
+        if (config(LARAVEL_API_RESPONSE_CONFIG . '.exceptions.stack_trace', false)) {
+            return env('APP_DEBUG') && !isset($this->exceptions[$this->getExceptionClass()]);
+        }
+
+        return false;
     }
 }
