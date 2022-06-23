@@ -19,6 +19,6 @@ class OutputApiResponse
      */
     public function handle(Request $request, Closure $next)
     {
-        return (new ApiResponse($request, $next))->makeJsonResponse();
+        return (new ApiResponse($request, $next))->makeResponse();
     }
 }
