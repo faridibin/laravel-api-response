@@ -129,16 +129,17 @@ class ExceptionHandler extends \Exception
                 continue;
             }
 
-            if (is_array($case)) {
-                foreach ($case as $key => $value) {
-                    if (is_callable([$this, $key])) {
-                        $this->$key($value);
-                    }
-                }
-            }
-
             if (is_callable($case)) {
                 $case($this->exception, $this);
+            } else if (is_array($case)) {
+                foreach ($case as $key => $value) {
+                    if (is_callable([$this, $key])) {
+                        call_user_func_array([$this, $key], is_array($value) ? $value : [$value]);
+                    } else {
+                        // TODO: Implement error() method.
+                        // dd(...$value);
+                    }
+                }
             }
         }
 
@@ -150,8 +151,10 @@ class ExceptionHandler extends \Exception
         }
 
         // TODO: Handle trace.
+        // dd($this->exceptions, $exception);
+        // shouldTrace()
         // if (env('APP_DEBUG')) {
-        //     $this->mergeErrors($this->exception->getTrace());
+        //     $this->mergeErrors(['trace' => $this->exception->getTrace()]);
         // }
 
         return false;
