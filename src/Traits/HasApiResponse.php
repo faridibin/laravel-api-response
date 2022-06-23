@@ -27,43 +27,13 @@ trait HasApiResponse
      */
     private function setResponse(): static
     {
-        if (!empty($this->getData(true)) && $content = $this->getOriginalContent()) {
-            /*
-            | For each different type of content, we will do a different thing.
-            | 1. Models: Model name is added on the data object.
-            | 2. Collections: Collection items are added to the data object.
-            | 3. Arrays: Array name is added on the data object.
-            */
-            if ($content instanceof \Illuminate\Database\Eloquent\Model) {
-                $this->setData([
-                    \Illuminate\Support\Str::snake(last(explode("\\", get_class($content)))) => $this->getData(true)
-                ]);
-            } else if ($content instanceof \Illuminate\Contracts\Support\Arrayable) {
-                // TODO: Pagination; use model name as resource name
-                // dd($content, $content->toArray());
-
-                $this->mergeData($content->toArray());
-            } else if (is_array($content)) {
-                dd($content);
-                // $this->json()->merge($content);
-            } else {
-                dd($content);
-                // $this->json()->add($content);
-            }
-        }
-
-        //     if ($_response->getStatusCode() !== 200) {
-        //         $this->json()->setStatusCode($_response->getStatusCode());
-        //     }
-        // dd($this->getData(true));
+        $this->checkData();
 
         if ($this->hasMessage()) {
             $this->response['message'] = $this->getMessage();
         }
 
         if ($this->hasErrors()) {
-            $this->response['errors'] = $this->getErrors();
-
             /*
             | Set status code to 400 if there are errors
             | only if it has not been specified before.
@@ -71,6 +41,8 @@ trait HasApiResponse
             if ($this->hasErrors() && $this->getStatusCode() === Response::HTTP_OK) {
                 $this->setStatusCode(Response::HTTP_BAD_REQUEST);
             }
+
+            $this->response['errors'] = $this->getErrors();
         }
 
         $this->response = array_merge($this->response, [
@@ -84,12 +56,49 @@ trait HasApiResponse
         return $this;
     }
 
+    /**
+     * Checks the data of the original content.
+     *
+     * @return void
+     */
+    public function checkData()
+    {
+        if (!empty($this->getData(true)) && $content = $this->getOriginalContent()) {
+            /*
+            | For each different type of content, we will do a different thing.
+            | 1. Models: Model name is added on the data object.
+            | 2. Collections: Collection items are added to the data object.
+            | 3. Arrays: Array name is added on the data object.
+            */
+            if ($content instanceof \Illuminate\Database\Eloquent\Model) {
+                $this->setData([
+                    \Illuminate\Support\Str::snake(last(explode("\\", get_class($content)))) => $this->getData(true)
+                ]);
+            } else if ($content instanceof \Illuminate\Contracts\Support\Arrayable) {
+                $arrayable = $content->toArray();
+
+                if (config(LARAVEL_API_RESPONSE_CONFIG . '.resource_name', false)) {
+                    $resource = \Illuminate\Support\Str::of(class_basename($content->items()[0]))->plural()->lower()->__toString();
+
+                    $arrayable[$resource] = $arrayable['data'];
+                    unset($arrayable['data']);
+                }
+
+                $this->setData($arrayable);
+            } else if (is_array($content)) {
+                $this->set($content);
+            } else {
+                $this->mergeData([$content]);
+            }
+        }
+    }
+
 
     public function setHeaders(array $headers = [])
     {
         // TODO: implement setHeaders
 
-        // dd($headers, $this->headers);
+        dd($headers, $this->headers);
         // if (
         //     $_response->headers->has(self::AUTH_HEADER) &&
         //     ($headerToken = $_response->headers->get(self::AUTH_HEADER))
@@ -107,7 +116,7 @@ trait HasApiResponse
     /**
      * Sets a data property on the data object
      *
-     * @param string $key
+     * @param mixed $key
      * @param mixed $value
      *
      * @return $this
@@ -115,10 +124,10 @@ trait HasApiResponse
     public function set($key, $value = null)
     {
         if (is_array($key)) {
-            $this->merge($key);
+            $this->mergeData($key);
+        } else {
+            $this->data[$key] = $value;
         }
-
-        $this->data[$key] = $value;
 
         return $this;
     }
