@@ -23,11 +23,36 @@ return [
     | Supported: "camel", "snake", "spinal"
     |
     */
+
     'uri_case' => 'snake',
 
-    // TODO: Pagination; use model name as resource name
+    /*
+    |--------------------------------------------------------------------------
+    | Data Format
+    |--------------------------------------------------------------------------
+    |
+    | All API responses have resources. This defines just a way
+    | of naming the resources to resemble natural language while avoiding
+    | spaces, apostrophes, and other exotic characters.
+    |
+    | Supported: "json", "xml", "yaml"
+    |
+    */
 
-    // TODO: Trace; show exception stack trace
+    'data_format' => 'json',
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pagination
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify if you want to use the resource name, which
+    | will be used instead of the "data", for the paginated items.
+    |
+    */
+
+    'resource_name' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -39,10 +64,18 @@ return [
     | as required, but they're a perfect start for most applications.
     |
     */
+
+    // TODO: Trace; show exception stack trace
+
     'exceptions' => [
         ModelNotFoundException::class => [
             'setMessage' => 'No query results for model found!',
-            'setStatusCode' => Response::HTTP_NOT_FOUND
+            'setStatusCode' => Response::HTTP_NOT_FOUND,
+            //TODO: set errors
+            'here' => [
+                'setMessage' => 'No query results for model found!',
+                'setStatusCode' => Response::HTTP_NOT_FOUND,
+            ],
         ],
 
         ValidationException::class => function (ValidationException $e, ExceptionHandler $handler) {
