@@ -31,9 +31,9 @@ return [
     | Data Format
     |--------------------------------------------------------------------------
     |
-    | All API responses have resources. This defines just a way
-    | of naming the resources to resemble natural language while avoiding
-    | spaces, apostrophes, and other exotic characters.
+    | All APIs have a response data format. This defines just a way
+    | the API handles the interaction between data generation and data request,
+    | typically between server and client.
     |
     | Supported: "json", "xml", "yaml"
     |
@@ -63,25 +63,27 @@ return [
     | You may specify a different exception handler for each exception
     | as required, but they're a perfect start for most applications.
     |
+    | You may set 'stack_trace' to true to include the stack trace in the
+    | ressponse when an exception is thrown in debug mode. Stack traces are
+    | not included in production and for any exception that is 'exceptions.handlers'.
+    |
     */
 
-    // TODO: Trace; show exception stack trace
-
     'exceptions' => [
-        ModelNotFoundException::class => [
-            'setMessage' => 'No query results for model found!',
-            'setStatusCode' => Response::HTTP_NOT_FOUND,
-            //TODO: set errors
-            'here' => [
-                'setMessage' => 'No query results for model found!',
-                'setStatusCode' => Response::HTTP_NOT_FOUND,
-            ],
-        ],
 
-        ValidationException::class => function (ValidationException $e, ExceptionHandler $handler) {
-            $handler
-                ->mergeErrors($e->errors())
-                ->setStatusCode($e->status ?? Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
+        'stack_trace' => true,
+
+        'handlers' => [
+            ModelNotFoundException::class => [
+                'setMessage' => 'No query results for model found!',
+                'setStatusCode' => Response::HTTP_NOT_FOUND
+            ],
+
+            ValidationException::class => function (ValidationException $e, ExceptionHandler $handler) {
+                $handler
+                    ->mergeErrors($e->errors())
+                    ->setStatusCode($e->status ?? Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        ],
     ]
 ];
