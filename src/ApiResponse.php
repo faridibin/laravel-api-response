@@ -75,9 +75,33 @@ class ApiResponse extends JsonResponse
             $message = $this->exception->getMessage();
             $errors = $this->exception->getErrors();
 
-            $this->setStatusCode($statusCode);
-            $this->setMessage($message);
-            $this->setErrors($errors);
+            $this->setStatusCode($statusCode)->setMessage($message)->setErrors($errors);
+        }
+    }
+
+    /**
+     * Makes the response based on the current data format in
+     * the configuration.
+     *
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     */
+    public function makeResponse()
+    {
+        $this->setResponse()
+            ->setHeaders()
+            ->format(config(LARAVEL_API_RESPONSE_CONFIG . '.uri_case', LARAVEL_API_RESPONSE_URI_CASE));
+
+        switch (config(LARAVEL_API_RESPONSE_CONFIG . '.data_format', LARAVEL_API_RESPONSE_FORMAT)) {
+            case 'xml':
+                # TODO: Implement XML format.
+                break;
+
+            case 'yml':
+                # TODO: Implement yml format
+                break;
+
+            default:
+                return $this->makeJsonResponse();
         }
     }
 
@@ -89,10 +113,6 @@ class ApiResponse extends JsonResponse
      */
     public function makeJsonResponse()
     {
-        $this->setResponse()
-            ->setHeaders()
-            ->format(config(LARAVEL_API_RESPONSE_CONFIG . '.uri_case', LARAVEL_API_RESPONSE_URI_CASE));
-
         return response()
             ->json($this->response, $this->getStatusCode(), []);
     }
