@@ -14,13 +14,31 @@ use Illuminate\Support\Str;
 
 if (!function_exists('api_response')) {
     /**
-     * Gets the apps ApiResponse
+     * Return a new api response from the application.
+     *
+     * @param  string|array|null  $content
+     * @param  int  $status
+     * @param  array  $headers
      *
      * @return \Faridibin\LaravelApiResponse\ApiResponse
      */
-    function api_response()
+    function api_response($content = '', $status = 200, array $headers = [])
     {
-        return app(LARAVEL_API_RESPONSE_KEY);
+        $apiResponse = app(LARAVEL_API_RESPONSE_KEY);
+
+        if (func_num_args() === 0) {
+            return $apiResponse;
+        }
+
+        if (is_array($content)) {
+            $apiResponse->setData($content);
+        }
+
+        if (is_string($content)) {
+            $apiResponse->setMessage($content);
+        }
+
+        return $apiResponse->setStatusCode($status)->setHeaders($headers);
     }
 }
 
