@@ -1,6 +1,7 @@
 <?php
 
 use Faridibin\LaravelApiResponse\Exceptions\ExceptionHandler;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -48,7 +49,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | Here you may specify if you want to use the resource name, which
-    | will be used instead of the "data", for the paginated items.
+    | will be used instead of the "data", for the paginated items or all of the
+    | model's results from the database.
     |
     */
 
@@ -65,7 +67,8 @@ return [
     |
     | You may set 'stack_trace' to true to include the stack trace in the
     | ressponse when an exception is thrown in debug mode. Stack traces are
-    | not included in production and for any exception that is 'exceptions.handlers'.
+    | not included in production and for any exception that is
+    | 'exceptions.handlers'.
     |
     */
 
@@ -74,6 +77,11 @@ return [
         'stack_trace' => true,
 
         'handlers' => [
+            AuthenticationException::class => [
+                'setMessage' => 'Unauthenticated.',
+                'setStatusCode' => Response::HTTP_UNAUTHORIZED
+            ],
+
             ModelNotFoundException::class => [
                 'setMessage' => 'No query results for model found!',
                 'setStatusCode' => Response::HTTP_NOT_FOUND
