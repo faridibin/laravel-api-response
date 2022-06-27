@@ -2,7 +2,6 @@
 
 namespace Faridibin\LaravelApiResponse;
 
-use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\ServiceProvider;
 
 class ApiResponseServiceProvider extends ServiceProvider
@@ -20,11 +19,7 @@ class ApiResponseServiceProvider extends ServiceProvider
         ]);
 
         $this->app->singleton(LARAVEL_API_RESPONSE_KEY, function ($app) {
-            dd($app, $app['request']);
-            return OutputApiResponse::class;
-
-            dd("Here", OutputApiResponse::class, $this->app, request(),/*new ApiResponse(request())*/);
-            // return new ApiResponse(request());
+            return new ApiResponse($app->get('request'));
         });
     }
 
@@ -42,31 +37,13 @@ class ApiResponseServiceProvider extends ServiceProvider
         );
     }
 
-
-    // /**
-    //  * Bootstrap the application services.
-    //  *
-    //  * @return void
-    //  */
-    // public function boot()
-    // {
-    //     $this->publishes([__DIR__ . '/../../../config/config.php' => config_path(LARAVEL_JSON_RESPONSE_CONFIG . '.php')]);
-
-    //     $this->app->singleton(LARAVEL_JSON_RESPONSE_KEY, function () {
-    //         return new JsonResponse();
-    //     });
-    // }
-
-    // /**
-    //  * Register the application services.
-    //  *
-    //  * @return void
-    //  */
-    // public function register()
-    // {
-    //     $this->mergeConfigFrom(
-    //         __DIR__ . '/../../../config/config.php',
-    //         LARAVEL_JSON_RESPONSE_CONFIG
-    //     );
-    // }
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [ApiResponse::class];
+    }
 }
