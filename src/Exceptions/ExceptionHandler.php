@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
  * object. It is however recommended that you do return an object as it
  * protects yourself against XSSI and JSON-JavaScript Hijacking.
  *
- * @see https://github.com/faridibin/laravel-api-json-response/blob/master/README.md
+ * @see https://github.com/faridibin/laravel-api-response/blob/master/EXAMPLES.md
  *
  * @author Farid Adam <me@faridibin.tech>
  */
@@ -56,6 +56,13 @@ class ExceptionHandler extends \Exception
      * @var bool
      */
     private $failed = true;
+
+    /**
+     * Whether or not the exception is traced.
+     *
+     * @var bool
+     */
+    private $traced = true;
 
     /**
      * Constructor.
@@ -113,7 +120,7 @@ class ExceptionHandler extends \Exception
         $method = Str::camel('handle_' . $this->getExceptionShortName());
 
         if (method_exists($this, $method)) {
-            $this->$method($this->exception);
+            $this->$method($this->exception)->setTraced(false);
         }
 
         // Check for exception tracing.
@@ -129,7 +136,7 @@ class ExceptionHandler extends \Exception
      *
      * @param ApiResponseErrorException $e
      *
-     * @return void
+     * @return $this
      */
     public function handleApiResponseErrorException(ApiResponseErrorException $e)
     {
@@ -137,17 +144,34 @@ class ExceptionHandler extends \Exception
             ->mergeErrors($e->getErrors())
             ->setMessage($e->getMessage())
             ->setStatusCode($e->statusCode ?? Response::HTTP_INTERNAL_SERVER_ERROR);
+
+        return $this;
     }
 
     /**
      * Sets the HTTP status code to be used for the response.
      *
      * @param  int  $statusCode
+     *
      * @return $this
      */
-    public function setStatusCode($statusCode)
+    public function setStatusCode(int $statusCode)
     {
         $this->statusCode = $statusCode;
+
+        return $this;
+    }
+
+    /**
+     * Sets whether or not the exception is traced.
+     *
+     * @param  bool  $traced
+     *
+     * @return $this
+     */
+    public function setTraced(bool $traced)
+    {
+        $this->traced = $traced;
 
         return $this;
     }
@@ -216,6 +240,16 @@ class ExceptionHandler extends \Exception
     }
 
     /**
+     * Returns whether or not the exception is traced.
+     *
+     * @return bool
+     */
+    public function traced()
+    {
+        return $this->traced;
+    }
+
+    /**
      * Returns whether or not the exception should
      * be traced.
      *
@@ -223,7 +257,7 @@ class ExceptionHandler extends \Exception
      */
     public function shouldTrace()
     {
-        if (config(LARAVEL_API_RESPONSE_CONFIG . '.exceptions.stack_trace', false)) {
+        if (config(LARAVEL_API_RESPONSE_CONFIG . '.exceptions.stack_trace', false) && $this->traced) {
             return env('APP_DEBUG') && !isset($this->exceptions[$this->getExceptionClass()]);
         }
 
