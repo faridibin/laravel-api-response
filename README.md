@@ -1,8 +1,8 @@
-# Laravel Json Response
+# Laravel API Response
 
 ## An [Ethereal](https://github.com/Faridibin/ethereal/wiki) Package
 
-Easy way to implement API formatted json responses.
+Easy way to implement formatted API responses.
 
 #### Format:
 ```json
