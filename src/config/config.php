@@ -10,6 +10,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Data Format
+    |--------------------------------------------------------------------------
+    |
+    | All APIs have a response data format. This defines just a way
+    | the API handles the interaction between data generation and data request,
+    | typically between server and client.
+    |
+    | Supported: "json", "xml", "yaml"
+    |
+    */
+
+    'data_format' => 'json',
+
+    /*
+    |--------------------------------------------------------------------------
     | URI Cases
     |--------------------------------------------------------------------------
     |
@@ -29,22 +44,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Data Format
-    |--------------------------------------------------------------------------
-    |
-    | All APIs have a response data format. This defines just a way
-    | the API handles the interaction between data generation and data request,
-    | typically between server and client.
-    |
-    | Supported: "json", "xml", "yaml"
-    |
-    */
-
-    'data_format' => 'json',
-
-
-    /*
-    |--------------------------------------------------------------------------
     | Pagination
     |--------------------------------------------------------------------------
     |
@@ -55,6 +54,25 @@ return [
     */
 
     'resource_name' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Authorization Tokens
+    |--------------------------------------------------------------------------
+    |
+    | By default, Passport uses auto-incrementing primary keys when assigning
+    | IDs to clients. However, if Passport is installed using the provided
+    | --uuids switch, this will be set to "true" and UUIDs will be used.
+    |
+    |
+    | Supported: "header", "response"
+    |
+    */
+
+    'token' =>  [
+        'include' => false,
+        'scope' => 'header',
+    ],
 
     /*
     |--------------------------------------------------------------------------
