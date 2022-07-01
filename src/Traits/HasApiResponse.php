@@ -5,13 +5,7 @@ namespace Faridibin\LaravelApiResponse\Traits;
 use Illuminate\Http\Response;
 
 /**
- * ApiResponse represents an HTTP response in JSON format.
- *
- * Note that this class does not force the returned JSON content to be an
- * object. It is however recommended that you do return an object as it
- * protects yourself against XSSI and JSON-JavaScript Hijacking.
- *
- * @see https://github.com/faridibin/laravel-api-json-response/blob/master/README.md
+ * HasApiResponse is a set of reusable methods for handling API responses.
  *
  * @author Farid Adam <me@faridibin.tech>
  */
@@ -29,10 +23,12 @@ trait HasApiResponse
     {
         $this->checkData();
 
+        // Set the response message.
         if ($this->hasMessage()) {
             $this->response['message'] = $this->getMessage();
         }
 
+        // Set the response errors.
         if ($this->hasErrors()) {
             /*
             | Set status code to 400 if there are errors
@@ -43,6 +39,15 @@ trait HasApiResponse
             }
 
             $this->response['errors'] = $this->getErrors();
+        }
+
+        // Set the response authorization token.
+        if (
+            config(LARAVEL_API_RESPONSE_CONFIG . '.token.include', false) &&
+            config(LARAVEL_API_RESPONSE_CONFIG . '.token.scope') === 'response' &&
+            $this->hasToken()
+        ) {
+            $this->response['authorization'] = $this->getToken();
         }
 
         $this->response = array_merge($this->response, [
@@ -75,16 +80,22 @@ trait HasApiResponse
                     \Illuminate\Support\Str::snake(last(explode("\\", get_class($content)))) => $this->getData(true)
                 ]);
             } else if ($content instanceof \Illuminate\Contracts\Support\Arrayable) {
-                $arrayable = $content->toArray();
-
                 if (config(LARAVEL_API_RESPONSE_CONFIG . '.resource_name', false)) {
-                    $resource = \Illuminate\Support\Str::of(class_basename($content->items()[0]))->plural()->lower()->__toString();
+                    $resource = \Illuminate\Support\Str::of(class_basename($content->first()))->plural()->lower()->__toString();
 
-                    $arrayable[$resource] = $arrayable['data'];
-                    unset($arrayable['data']);
+                    if ($content instanceof \Illuminate\Database\Eloquent\Collection) {
+                        $this->setData([$resource => $content->toArray()]);
+                    }
+
+                    if ($content instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+                        $arrayable = $content->toArray();
+                        $arrayable[$resource] = $arrayable['data'];
+
+                        unset($arrayable['data']);
+
+                        $this->setData($arrayable);
+                    }
                 }
-
-                $this->setData($arrayable);
             } else if (is_array($content)) {
                 $this->set($content);
             } else {
@@ -93,22 +104,60 @@ trait HasApiResponse
         }
     }
 
+    /**
+     * Checks if the request has a token.
+     * If a token is found, it will be added to the response.
+     *
+     * @param string $authorization
+     *
+     * @return void
+     */
+    public function checkToken(string $authorization = null)
+    {
+        if (!empty($authorization)) {
+            list($scheme, $token) = explode(' ', $authorization);
 
+            $this->setToken($token, $scheme);
+        }
+    }
+
+    /**
+     * Sets the headers.
+     *
+     * @param array $headers
+     *
+     * @return $this
+     */
     public function setHeaders(array $headers = [])
     {
-        // TODO: implement setHeaders
+        // Set content type of response.
+        switch (config(LARAVEL_API_RESPONSE_CONFIG . '.data_format', LARAVEL_API_RESPONSE_FORMAT)) {
+            case 'xml':
+                $this->headers->set('Content-Type', ['application/xml', 'text/xml']);
+                break;
 
-        dd($headers, $this->headers);
-        // if (
-        //     $_response->headers->has(self::AUTH_HEADER) &&
-        //     ($headerToken = $_response->headers->get(self::AUTH_HEADER))
-        // ) {
-        //     $headers[self::AUTH_HEADER] = $headerToken;
-        //     $this->json()->setToken(null);
-        // } elseif ($this->hasToken()) {
-        //     $headers[self::AUTH_HEADER] = 'Bearer ' . $this->json()->getToken();
-        //     $this->json()->setToken(null);
-        // }
+            case 'yml':
+                $this->headers->set('Content-Type', ['application/x-yaml', 'text/x-yaml']);
+                break;
+
+            default:
+                $this->headers->set('Content-Type', 'application/json');
+                break;
+        }
+
+        // Set authorization.
+        if (
+            config(LARAVEL_API_RESPONSE_CONFIG . '.token.include', false) &&
+            config(LARAVEL_API_RESPONSE_CONFIG . '.token.scope') === 'header' &&
+            $this->hasToken()
+        ) {
+            $this->headers->set('Authorization', $this->getToken(true));
+        }
+
+        // Set other headers.
+        foreach ($headers as $key => $value) {
+            $this->headers->set($key, $value);
+        }
 
         return $this;
     }
@@ -124,7 +173,7 @@ trait HasApiResponse
     public function set($key, $value = null)
     {
         if (is_array($key)) {
-            $this->mergeData($key);
+            $this->setData($key);
         } else {
             $this->data[$key] = $value;
         }
@@ -181,7 +230,7 @@ trait HasApiResponse
 
     /**
      * Removes some data from the json data.
-     * If $key is empty all data is removed.
+     * If key is empty all data is removed.
      *
      * @param string $key
      *
@@ -225,7 +274,7 @@ trait HasApiResponse
      */
     public function hasToken()
     {
-        return isset($this->token);
+        return isset($this->authorization);
     }
 
     /**
