@@ -39,11 +39,11 @@ class ApiResponse extends JsonResponse
     public $exception;
 
     /**
-     * The token for the response.
+     * The authorization for the response.
      *
-     * @var string
+     * @var array
      */
-    protected $token = null;
+    protected $authorization = null;
 
     /**
      * The message for the response.
@@ -88,6 +88,8 @@ class ApiResponse extends JsonResponse
                 $this->setStatusCode($statusCode)->setMessage($message)->setErrors($errors);
             }
         }
+
+        $this->checkToken($request->headers->get('Authorization'));
     }
 
     /**
@@ -201,13 +203,17 @@ class ApiResponse extends JsonResponse
     /**
      * Sets the token of the request.
      *
-     * @param $token
+     * @param string $token
+     * @param string $scheme
      *
      * @return $this
      */
-    public function setToken($token)
+    public function setToken(string $token, string $scheme = 'Bearer')
     {
-        $this->token = $token;
+        $this->authorization = [
+            'token' => $token,
+            'scheme' => $scheme,
+        ];
 
         return $this;
     }
@@ -215,10 +221,14 @@ class ApiResponse extends JsonResponse
     /**
      * Gets the response token.
      *
-     * @return null
+     * @return mixed
      */
-    public function getToken()
+    public function getToken(bool $scheme = false)
     {
-        return $this->token;
+        if ($scheme) {
+            return $this->authorization['scheme'] . ' ' . $this->authorization['token'];
+        }
+
+        return $this->authorization;
     }
 }
