@@ -106,12 +106,11 @@ class ApiResponse extends JsonResponse
 
         switch (config(LARAVEL_API_RESPONSE_CONFIG . '.data_format', LARAVEL_API_RESPONSE_FORMAT)) {
             case 'xml':
-                # TODO: Implement XML format.
-                break;
+                return $this->makeXmlResponse();
 
             case 'yml':
-                # TODO: Implement yml format
-                break;
+            case 'yaml':
+                return $this->makeYmlResponse();
 
             default:
                 return $this->makeJsonResponse();
@@ -119,15 +118,39 @@ class ApiResponse extends JsonResponse
     }
 
     /**
-     * Transform the JsonResponse object into an actual Response.
+     * Transform the ApiResponse object into an actual Json response.
      * Merges headers and original content from the original response
      *
-     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse|\Faridibin\LaravelApiResponse\Http\XmlResponse|\Faridibin\LaravelApiResponse\Http\YamlResponse
      */
     public function makeJsonResponse()
     {
         return response()
             ->json($this->response, $this->getStatusCode(), $this->headers->all());
+    }
+
+    /**
+     * Transform the ApiResponse object into an actual XML response.
+     * Merges headers and original content from the original response
+     *
+     * @return \Illuminate\Http\Response|\Faridibin\LaravelApiResponse\Http\XmlResponse
+     */
+    public function makeXmlResponse()
+    {
+        return response()
+            ->xml($this->response, $this->getStatusCode(), $this->headers->all());
+    }
+
+    /**
+     * Transform the ApiResponse object into an actual YAML response.
+     * Merges headers and original content from the original response
+     *
+     * @return \Illuminate\Http\Response|\Faridibin\LaravelApiResponse\Http\YamlResponse
+     */
+    public function makeYmlResponse()
+    {
+        return response()
+            ->yaml($this->response, $this->getStatusCode(), $this->headers->all());
     }
 
     /**
