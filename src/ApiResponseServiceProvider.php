@@ -2,6 +2,9 @@
 
 namespace Faridibin\LaravelApiResponse;
 
+use Faridibin\LaravelApiResponse\Http\XmlResponse;
+use Faridibin\LaravelApiResponse\Http\YamlResponse;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
 
 class ApiResponseServiceProvider extends ServiceProvider
@@ -35,6 +38,19 @@ class ApiResponseServiceProvider extends ServiceProvider
             __DIR__ . '/config/config.php',
             LARAVEL_API_RESPONSE_CONFIG
         );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Register the API response macros.
+        */
+
+        Response::macro('xml', function ($data = [], $status = 200, array $headers = [], $options = 0) {
+            return new XmlResponse($data, $status, $headers, $options);
+        });
+
+        Response::macro('yaml', function ($data = [], $status = 200, array $headers = [], $options = 0) {
+            return new YamlResponse($data, $status, $headers, $options);
+        });
     }
 
     /**
