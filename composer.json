@@ -2,13 +2,15 @@
     "name": "faridibin/laravel-api-response",
     "description": "Easy Api responses for laravel.",
     "keywords": ["laravel", "api", "response", "json", "xml"],
-    "type": "Extension",
     "license": "MIT",
     "authors": [{
         "name": "Farid Adam",
         "email": "faridibin@gmail.com"
     }],
-    "require": {},
+    "require-dev": {
+        "orchestra/testbench": "^7.6",
+        "nunomaduro/collision": "^6.2"
+    },
     "autoload": {
         "psr-4": {
             "Faridibin\\LaravelApiResponse\\": "src/"
@@ -16,6 +18,16 @@
         "files": [
             "src/Helpers/constants.php",
             "src/Helpers/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Faridibin\\LaravelApiResponse\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php ./vendor/bin/testbench package:discover --ansi"
         ]
     },
     "extra": {
