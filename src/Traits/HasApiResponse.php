@@ -73,7 +73,9 @@ trait HasApiResponse
             | For each different type of content, we will do a different thing.
             | 1. Models: Model name is added on the data object.
             | 2. Collections: Collection items are added to the data object.
-            | 3. Arrays: Array name is added on the data object.
+            | 3. XML Document: Elements in an XML document added to the data object.
+            | 4. Arrays: Array name is added on the data object.
+            | 5. Other: The original content is added to the data object.
             */
             if ($content instanceof \Illuminate\Database\Eloquent\Model) {
                 $this->setData([
@@ -96,6 +98,8 @@ trait HasApiResponse
                         $this->setData($arrayable);
                     }
                 }
+            } else if ($content instanceof \SimpleXMLElement) {
+                $this->set($content->asXML());
             } else if (is_array($content)) {
                 $this->set($content);
             } else {
