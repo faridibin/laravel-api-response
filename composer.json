@@ -7,6 +7,9 @@
         "name": "Farid Adam",
         "email": "faridibin@gmail.com"
     }],
+    "require": {
+        "symfony/yaml": "^6.1"
+    },
     "require-dev": {
         "orchestra/testbench": "^7.6",
         "nunomaduro/collision": "^6.2"
