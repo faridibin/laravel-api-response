@@ -21,8 +21,6 @@ trait HasApiResponse
      */
     private function setResponse(): static
     {
-        $this->checkData();
-
         // Set the response message.
         if ($this->hasMessage()) {
             $this->response['message'] = $this->getMessage();
@@ -64,7 +62,7 @@ trait HasApiResponse
     /**
      * Checks the data of the original content.
      *
-     * @return void
+     * @return $this
      */
     public function checkData()
     {
@@ -106,6 +104,8 @@ trait HasApiResponse
                 $this->mergeData([$content]);
             }
         }
+
+        return $this;
     }
 
     /**
