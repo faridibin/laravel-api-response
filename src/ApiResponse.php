@@ -8,6 +8,7 @@ use Faridibin\LaravelApiResponse\Exceptions\ExceptionHandler;
 use Faridibin\LaravelApiResponse\Traits\HasApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response as BaseResponse;
 
 /**
  * ApiResponse represents an HTTP response in a specified format.
@@ -100,7 +101,8 @@ class ApiResponse extends JsonResponse
      */
     public function makeResponse()
     {
-        $this->setResponse()
+        $this->checkData()
+            ->setResponse()
             ->setHeaders()
             ->format(config(LARAVEL_API_RESPONSE_CONFIG . '.uri_case', LARAVEL_API_RESPONSE_URI_CASE));
 
@@ -138,7 +140,12 @@ class ApiResponse extends JsonResponse
     public function makeXmlResponse()
     {
         return response()
-            ->xml($this->response, $this->getStatusCode(), $this->headers->all());
+            ->xml(
+                $this->response,
+                $this->getStatusCode(),
+                $this->headers->all(),
+                config(LARAVEL_API_RESPONSE_CONFIG . '.xml', LARAVEL_API_RESPONSE_XML_CONFIG)
+            );
     }
 
     /**
