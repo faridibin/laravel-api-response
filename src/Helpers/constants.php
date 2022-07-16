@@ -17,3 +17,13 @@ define('LARAVEL_API_RESPONSE_URI_CASES', ['camel', 'slug', 'snake', 'spinal']);
 define('LARAVEL_API_RESPONSE_URI_CASE', 'snake');
 define('LARAVEL_API_RESPONSE_FORMATS', ['json', 'xml', 'yaml']);
 define('LARAVEL_API_RESPONSE_FORMAT', 'json');
+define('LARAVEL_API_RESPONSE_XML_CONFIG', [
+    'root' => 'response',
+    'namespace' => null,
+    'prefix' => null,
+    'encoding' => 'UTF-8',
+    'version' => '1.0'
+]);
+define('LARAVEL_API_RESPONSE_XML_KEYWORDS', [
+    'data'
+]);
