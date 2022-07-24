@@ -1,11 +1,7 @@
 <?php
 
 /**
- * ApiResponse represents an HTTP response in JSON format.
- *
- * Note that this class does not force the returned JSON content to be an
- * object. It is however recommended that you do return an object as it
- * protects yourself against XSSI and JSON-JavaScript Hijacking.
+ * Constants.
  *
  * @author Farid Adam <me@faridibin.tech>
  */
@@ -26,4 +22,10 @@ define('LARAVEL_API_RESPONSE_XML_CONFIG', [
 ]);
 define('LARAVEL_API_RESPONSE_XML_KEYWORDS', [
     'data'
+]);
+define('LARAVEL_API_RESPONSE_YAML_CONFIG', [
+    'root' => 'response',
+    'inline' => 2,
+    'indent' => 4,
+    'flags' => 0
 ]);
