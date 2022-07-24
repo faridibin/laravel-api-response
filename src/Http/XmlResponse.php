@@ -16,10 +16,10 @@ class XmlResponse extends BaseResponse
     /**
      * Constructor.
      *
-     * @param  mixed  $data
-     * @param  int  $status
-     * @param  array  $headers
-     * @param  array  $options
+     * @param mixed $data
+     * @param int $status
+     * @param array $headers
+     * @param array $options
      *
      * @return void
      */
