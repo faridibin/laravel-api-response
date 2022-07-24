@@ -140,6 +140,7 @@ trait HasApiResponse
                 $this->headers->set('Content-Type', ['application/xml', 'text/xml']);
                 break;
 
+            case 'yaml':
             case 'yml':
                 $this->headers->set('Content-Type', ['application/x-yaml', 'text/x-yaml']);
                 break;
