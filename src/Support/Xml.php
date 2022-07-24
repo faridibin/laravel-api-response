@@ -65,7 +65,7 @@ class Xml
      *
      * @return string
      */
-    public static  function convert($data, $options)
+    public static function convert($data, $options)
     {
         return (new static($data, $options))->toXml();
     }
