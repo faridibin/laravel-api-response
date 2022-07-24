@@ -2,6 +2,7 @@
 
 namespace Faridibin\LaravelApiResponse\Http;
 
+use Faridibin\LaravelApiResponse\Support\Yaml;
 use Illuminate\Http\ResponseTrait;
 use Illuminate\Support\Traits\Macroable;
 use Symfony\Component\HttpFoundation\Response as BaseResponse;
@@ -15,15 +16,17 @@ class YamlResponse extends BaseResponse
     /**
      * Constructor.
      *
-     * @param  mixed  $data
-     * @param  int  $status
-     * @param  array  $headers
-     * @param  int  $options
+     * @param mixed $data
+     * @param int $status
+     * @param array $headers
+     * @param array $options
      *
      * @return void
      */
-    public function __construct($data = null, $status = 200, $headers = [], $options = 0)
+    public function __construct($data = null, $status = 200, $headers = [], $options = [])
     {
-        dd($data, $status, $headers, $options);
+        $data = new Yaml($data, $options);
+
+        parent::__construct($data->toYaml(), $status, $headers);
     }
 }
