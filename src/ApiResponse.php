@@ -157,7 +157,12 @@ class ApiResponse extends JsonResponse
     public function makeYmlResponse()
     {
         return response()
-            ->yaml($this->response, $this->getStatusCode(), $this->headers->all());
+            ->yaml(
+                $this->response,
+                $this->getStatusCode(),
+                $this->headers->all(),
+                config(LARAVEL_API_RESPONSE_CONFIG . '.yaml', LARAVEL_API_RESPONSE_YAML_CONFIG)
+            );
     }
 
     /**
