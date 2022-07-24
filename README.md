@@ -1,7 +1,5 @@
 # Laravel API Response
 
-## An [Ethereal](https://github.com/Faridibin/ethereal/wiki) Package
-
 Easy way to implement formatted API responses.
 
 #### Format:
