@@ -3,11 +3,7 @@
 namespace Faridibin\LaravelApiResponse\Exceptions;
 
 /**
- * ApiResponse represents an HTTP response in JSON format.
- *
- * Note that this class does not force the returned JSON content to be an
- * object. It is however recommended that you do return an object as it
- * protects yourself against XSSI and JSON-JavaScript Hijacking.
+ * Custom exception handler for API response.
  *
  * @see https://github.com/faridibin/laravel-api-response/blob/master/EXAMPLES.md
  *
