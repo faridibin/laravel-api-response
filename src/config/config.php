@@ -25,6 +25,31 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Data Format Config
+    |--------------------------------------------------------------------------
+    |
+    | The data format config is used to influence the way the data is formatted.
+    | There are configs for XML and YAML.
+    |
+    */
+
+    'xml' => [
+        'root' => 'response',
+        'namespace' => null,
+        'prefix' => null,
+        'encoding' => 'UTF-8',
+        'version' => '1.0'
+    ],
+
+    'yaml' => [
+        'root' => 'response',
+        'inline' => 2,
+        'indent' => 4,
+        'flags' => 0
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | URI Cases
     |--------------------------------------------------------------------------
     |
