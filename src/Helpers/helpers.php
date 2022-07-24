@@ -3,11 +3,7 @@
 use Illuminate\Support\Str;
 
 /**
- * ApiResponse represents an HTTP response in JSON format.
- *
- * Note that this class does not force the returned JSON content to be an
- * object. It is however recommended that you do return an object as it
- * protects yourself against XSSI and JSON-JavaScript Hijacking.
+ * Helper functions for the API response.
  *
  * @author Farid Adam <me@faridibin.tech>
  */
