@@ -85,6 +85,10 @@ class ExceptionHandler
                     if ($case($this->exception, $this->json())) {
                         $result = true;
                     }
+                } elseif ($class = app($case)) {
+                    if ($class($this->exception, $this->json())) {
+                        $result = true;
+                    }
                 } else {
 
                     $this->json()->error($case);
