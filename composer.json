@@ -1,26 +1,28 @@
 {
     "name": "faridibin/laravel-api-response",
-    "description": "Easy Api responses for laravel.",
-    "keywords": ["laravel", "api", "response", "json", "xml"],
+    "description": "A Laravel package for consistently formatted API responses with support for JSON, XML, and YAML.",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Farid Adam",
+            "email": "faridibin@gmail.com"
+        }
+    ],
     "license": "MIT",
-    "authors": [{
-        "name": "Farid Adam",
-        "email": "faridibin@gmail.com"
-    }],
     "require": {
-        "symfony/yaml": "^6.1"
+        "symfony/yaml": "^6.3"
     },
     "require-dev": {
-        "orchestra/testbench": "^7.6",
-        "nunomaduro/collision": "^6.2"
+        "orchestra/testbench": "^8.6",
+        "nunomaduro/collision": "^7.8"
     },
     "autoload": {
         "psr-4": {
             "Faridibin\\LaravelApiResponse\\": "src/"
         },
         "files": [
-            "src/Helpers/constants.php",
-            "src/Helpers/helpers.php"
+            "src/constants.php",
+            "src/helpers.php"
         ]
     },
     "autoload-dev": {
@@ -36,8 +38,9 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Faridibin\\LaravelApiResponse\\ApiResponseServiceProvider"
+                "Faridibin\\LaravelApiResponse\\Providers\\ApiResponseServiceProvider"
             ]
         }
-    }
+    },
+    "minimum-stability": "stable"
 }
