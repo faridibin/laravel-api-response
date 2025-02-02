@@ -28,6 +28,34 @@ Publish the configuration file:
 php artisan vendor:publish --tag="api-response-config"
 ```
 
+### Configuration Options
+
+The `config/api-response.php` file includes:
+
+```php
+return [
+    // Exception handlers
+    'exceptions' => [
+        ModelNotFoundException::class => [
+            'setStatusCode' => 404,
+            'setModelNotFoundMessage' => 'Resource not found'
+        ],
+        ValidationException::class => function($exception, $handler) {
+            $handler
+                ->setStatusCode(422)
+                ->setMessage('Validation failed')
+                ->mergeErrors($exception->errors());
+        }
+    ],
+
+    // Enable stack traces in local environment
+    'trace' => env('APP_ENV') === 'local',
+
+    // Use plural resource names for collections
+    'resource_name' => true,
+];
+```
+
 ## Basic Usage
 
 Add the middleware to your API routes in `app/Http/Kernel.php`:
@@ -56,9 +84,11 @@ The package provides a consistent response structure:
 }
 ```
 
-### Examples
+## Examples
 
-#### Returning a Model
+### Returning Models
+
+#### Single Model
 
 ```php
 public function show(User $user)
@@ -89,7 +119,9 @@ Response:
 }
 ```
 
-#### Returning a Collection|Pagination
+### Collection Handling
+
+#### Basic Collection
 
 ```php
 public function index()
@@ -98,57 +130,11 @@ public function index()
 }
 ```
 
-Response:
+Response includes automatically pluralized resource name:
 
 ```json
 {
 	"data": {
-		"users": [
-            {
-				"id": 1,
-				"name": "Crystal Farrell",
-				"email": "berenice.bednar@example.org",
-				"email_verified_at": "2025-02-02T02:20:17.000000Z",
-				"created_at": "2025-02-02T02:20:17.000000Z",
-				"updated_at": "2025-02-02T02:20:17.000000Z"
-			},
-			...
-        ]
-	},
-	"success": true,
-	"status": "success",
-	"status_code": 200,
-	"status_text": "OK"
-}
-```
-
-```php
-public function index()
-{
-    return User::paginate();
-}
-```
-
-Response:
-
-```json
-{
-	"data": {
-		"current_page": 1,
-		"first_page_url": "https://package-maker.test/api/users?page=1",
-		"from": 1,
-		"last_page": 20,
-		"last_page_url": "https://package-maker.test/api/users?page=20",
-		"links": [
-			{ "url": null, "label": "&laquo; Previous", "active": false },
-			...
-		],
-		"next_page_url": "https://package-maker.test/api/users?page=2",
-		"path": "https://package-maker.test/api/users",
-		"per_page": 5,
-		"prev_page_url": null,
-		"to": 5,
-		"total": 100,
 		"users": [
 			{
 				"id": 1,
@@ -157,11 +143,9 @@ Response:
 				"email_verified_at": "2025-02-02T02:20:17.000000Z",
 				"created_at": "2025-02-02T02:20:17.000000Z",
 				"updated_at": "2025-02-02T02:20:17.000000Z"
-			},
-			...
+			}
 		]
 	},
-	"errors": [],
 	"success": true,
 	"status": "success",
 	"status_code": 200,
@@ -169,34 +153,81 @@ Response:
 }
 ```
 
-## Exception Handling
-
-Configure exception handlers in `config/api-response.php`:
+#### Pagination
 
 ```php
-return [
-    'exceptions' => [
-        ModelNotFoundException::class => [
-            'setStatusCode' => 404,
-            'setModelNotFoundMessage' => 'Resource not found'
-        ],
-        ValidationException::class => function($exception, $handler) {
-            $handler
-                ->setStatusCode(422)
-                ->setMessage('Validation failed')
-                ->mergeErrors($exception->errors());
-        }
-    ],
-];
+public function index()
+{
+    return User::paginate();
+}
 ```
 
-## Available Methods
+## Upgrading from laravel-json-response
 
-### Error Handling
+Key changes when upgrading from the previous version:
 
--   `mergeErrors(array $errors)`: Add multiple errors
--   `setStatusCode(int $code)`: Set HTTP status code
--   `setModelNotFoundMessage(string $message)`: Set the Model Not Found message
+1. Namespace Change:
+
+    - Old: `Faridibin\LaravelJsonResponse`
+    - New: `Faridibin\LaravelApiResponse`
+
+2. Middleware:
+
+    - Old: `OutputJsonResponse`
+    - New: `EnsureApiResponse`
+
+3. Trait:
+
+    - Old: `HasJson`
+    - New: `HasApiResponse`
+
+4. Method Changes:
+
+    ```php
+    // Old
+    json_response()->error('message');
+
+    // New
+    $this->setMessage('message')->mergeErrors(['error']);
+    ```
+
+## Troubleshooting
+
+### Common Issues
+
+1. Response Not Formatting
+
+    ```php
+    // Ensure middleware is registered correctly in Kernel.php
+    protected $middlewareGroups = [
+        'api' => [
+            \Faridibin\LaravelApiResponse\Http\Middleware\EnsureApiResponse::class,
+        ],
+    ];
+    ```
+
+2. Resource Names Not Working
+
+    ```php
+    // Verify config/api-response.php has:
+    'resource_name' => true,
+    ```
+
+3. Exception Handler Not Working
+
+    ```php
+    // Check exception configuration:
+    'exceptions' => [
+        YourException::class => [
+            'setStatusCode' => 404,
+            'setMessage' => 'Custom message'
+        ]
+    ]
+    ```
+
+4. Stack Traces Not Showing
+    - Ensure your environment is set to 'local'
+    - Check `trace` config is enabled
 
 ## Contributing
 
