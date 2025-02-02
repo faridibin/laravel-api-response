@@ -1,264 +1,238 @@
-# Laravel Json Response
+# Laravel API Response
 
-## An [Ethereal](https://github.com/Faridibin/ethereal/wiki) Package
+A Laravel package that provides a standardized, consistent way to format API responses with proper status codes, messages, and error handling.
 
-Easy way to implement API formatted json responses.
+## Features
 
-#### Format:
+-   Modern PHP 8.0+ implementation with type hints and return types
+-   Consistent JSON response structure
+-   Automatic handling of Laravel Models, Collections, and Paginated responses
+-   Configurable resource naming for collections
+-   Comprehensive exception handling
+-   Debug mode with stack traces
+-   Support for custom headers and messages
+
+## Installation
+
+Install the package via composer:
+
+```bash
+composer require faridibin/laravel-api-response
+```
+
+## Configuration
+
+Publish the configuration file:
+
+```bash
+php artisan vendor:publish --tag="api-response-config"
+```
+
+### Configuration Options
+
+The `config/api-response.php` file includes:
+
+```php
+return [
+    // Exception handlers
+    'exceptions' => [
+        ModelNotFoundException::class => [
+            'setStatusCode' => 404,
+            'setModelNotFoundMessage' => 'Resource not found'
+        ],
+        ValidationException::class => function($exception, $handler) {
+            $handler
+                ->setStatusCode(422)
+                ->setMessage('Validation failed')
+                ->mergeErrors($exception->errors());
+        }
+    ],
+
+    // Enable stack traces in local environment
+    'trace' => env('APP_ENV') === 'local',
+
+    // Use plural resource names for collections
+    'resource_name' => true,
+];
+```
+
+## Basic Usage
+
+Add the middleware to your API routes in `app/Http/Kernel.php`:
+
+```php
+protected $middlewareGroups = [
+    'api' => [
+        \Faridibin\LaravelApiResponse\Http\Middleware\EnsureApiResponse::class,
+    ],
+];
+```
+
+### Response Structure
+
+The package provides a consistent response structure:
+
 ```json
 {
-    "data": {...},
-    "errors": [],
-    "success": true,
-    "status_code": 200,
-    "token": null
+	"data": {},
+	"message": "Optional message",
+	"errors": [],
+	"success": true,
+	"status": "success",
+	"status_code": 200,
+	"status_text": "OK"
 }
-```
-
-## Setup
-
-Install:
-```bash
-composer require Faridibin/laravel-json-response
-```
-
-Add the service provider to your app config:
-```php
-\Faridibin\LaravelJsonResponse\Providers\LaravelJsonResponseProvider::class,
-```
-
-Add the middleware to your `app\Http\Kernel.php`
-
-Either:
-
-```php
-// Formats all responses in json. Catches errors listed in config and JsonResponseErrorExceptions
-Faridibin\LaravelJsonResponse\Middleware\OutputJsonResponse, 
-
-// Extends the OutputJsonResponse to catch all errors, to keep the JSON output
-Faridibin\LaravelJsonResponse\Middleware\CatchAllExceptions, 
-```
-
-### Config
-
-Publish the config by using the command:
-```bash
-php artisan vendor:publish
 ```
 
 ## Examples
 
-#### Example returning the data
+### Returning Models
 
-Usage:
+#### Single Model
+
 ```php
-Route::get('test', function () {
-    return ['hello' => true];
-});
-```
-
-Output:
-```json
+public function show(User $user)
 {
-    "data": {
-      "hello": true
-    },
-    "errors": [],
-    "success": true,
-    "status_code": 200
+    return $user;
 }
 ```
 
------
+Response:
 
-#### Example manipulating the JSON directly
-You can also set data and tokens directly from this method.
-
-Usage:
-```php
-Route::get('test', function () {
-    json_response()->error('This an example error message')
-        ->setStatusCode(\Illuminate\Http\Response::HTTP_BAD_REQUEST);
-});
-```
-
-Output:
 ```json
 {
-    "data": [],
-    "errors": [
-      "This an example error message"
-    ],
-    "success": false,
-    "status_code": 400
+	"data": {
+		"user": {
+			"id": 1,
+			"name": "Crystal Farrell",
+			"email": "berenice.bednar@example.org",
+			"email_verified_at": "2025-02-02T02:20:17.000000Z",
+			"created_at": "2025-02-02T02:20:17.000000Z",
+			"updated_at": "2025-02-02T02:20:17.000000Z"
+		}
+	},
+	"errors": [],
+	"success": true,
+	"status": "success",
+	"status_code": 200,
+	"status_text": "OK"
 }
 ```
 
------
+### Collection Handling
 
-#### Example returning a model
-Models are added onto the data using snake_case.
+#### Basic Collection
 
-Usage:
 ```php
-Route::get('test', function () {
-    return \App\Models\TestModel::find(2);
-});
-```
-
-Output:
-```json
+public function index()
 {
-    "data": {
-        "test_model": {
-            "id": 2
-        }
-    },
-    "success": false,
-    "status_code": 400
+    return User::all();
 }
 ```
 
-----
+Response includes automatically pluralized resource name:
 
-
-#### Example returning an Arrayable
-Arrayable objects have toArray methods, which are merged with the data.
-
-Usage:
-```php
-Route::get('test', function () {
-    return \App\Models\TestModel::paginate();
-});
-```
-
-Output:
 ```json
 {
-    "data": {
-        "current_page": 1,
-        "data": [
-            {
-                "id": 1
-            },
-            {
-                "id": 2
-            },
-            ...
+	"data": {
+		"users": [
+			{
+				"id": 1,
+				"name": "Crystal Farrell",
+				"email": "berenice.bednar@example.org",
+				"email_verified_at": "2025-02-02T02:20:17.000000Z",
+				"created_at": "2025-02-02T02:20:17.000000Z",
+				"updated_at": "2025-02-02T02:20:17.000000Z"
+			}
+		]
+	},
+	"success": true,
+	"status": "success",
+	"status_code": 200,
+	"status_text": "OK"
+}
+```
+
+#### Pagination
+
+```php
+public function index()
+{
+    return User::paginate();
+}
+```
+
+## Upgrading from laravel-json-response
+
+Key changes when upgrading from the previous version:
+
+1. Namespace Change:
+
+    - Old: `Faridibin\LaravelJsonResponse`
+    - New: `Faridibin\LaravelApiResponse`
+
+2. Middleware:
+
+    - Old: `OutputJsonResponse`
+    - New: `EnsureApiResponse`
+
+3. Trait:
+
+    - Old: `HasJson`
+    - New: `HasApiResponse`
+
+4. Method Changes:
+
+    ```php
+    // Old
+    json_response()->error('message');
+
+    // New
+    $this->setMessage('message')->mergeErrors(['error']);
+    ```
+
+## Troubleshooting
+
+### Common Issues
+
+1. Response Not Formatting
+
+    ```php
+    // Ensure middleware is registered correctly in Kernel.php
+    protected $middlewareGroups = [
+        'api' => [
+            \Faridibin\LaravelApiResponse\Http\Middleware\EnsureApiResponse::class,
         ],
-        "first_page_url": "http://url/api/test?page=1",
-        "from": 1,
-        "last_page": 3,
-        "last_page_url": "http://url/api/test?page=3",
-        "next_page_url": "http://url/api/test?page=2",
-        "path": "http://url/api/test",
-        "per_page": 10,
-        "prev_page_url": null,
-        "to": 10,
-        "total": 24
-    },
-    "errors": [],
-    "success": true,
-    "status_code": 200
-}
-```
+    ];
+    ```
 
-----
+2. Resource Names Not Working
 
-#### Example with validation errors
+    ```php
+    // Verify config/api-response.php has:
+    'resource_name' => true,
+    ```
 
-Usage:
-```php
-Route::get('test', function () {
-    throw new \Illuminate\Validation\ValidationException(\Validator::make([], ['test' => 'required']));
-});
-```
+3. Exception Handler Not Working
 
-Output:
-```json
-{
-    "data": [],
-    "errors": {
-        "test": [
-            "The test field is required."
-        ]
-    },
-    "success": false,
-    "status_code": 422
-}
-```
-
----
-
-#### Example Exception
-*NOTE: `APP_DEBUG=true` will display a stack trace*
-
-Usage:
-```php
-Route::get('test', function () {
-    throw new Exception('test');
-});
-```
-
-Output:
-```json
-{
-    "data": [],
-    "errors": [
-        "test message",
-        {
-            "file": "C:\\Users\\kevin\\Projects\\laravel\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php",
-            "line": 172,
-            "function": "runCallable",
-            "class": "Illuminate\\Routing\\Route",
-            "type": "->",
-            "args": []
-        },
-        {...},
-        {...},
-        {...},
-        {...},
-        ...
-    ],
-    "success": false,
-    "status_code": 500
-}
-```
-
-
-### Exception Handling
-
-Exceptions can be caught by using the config file:
-
-```php
-
-<?php
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Response;
-use Illuminate\Validation\ValidationException;
-use Faridibin\LaravelJsonResponse\JsonResponse;
-
-return [
+    ```php
+    // Check exception configuration:
     'exceptions' => [
-        
-        /**
-         * Show model not found when receiving this error
-         */
-        ModelNotFoundException::class => 'Model not found', // OR
-        ModelNotFoundException::class => ['NOT_FOUND', 'Model not found'], // OR
-        ModelNotFoundException::class => [
-            'error' => 'Model not found', // these are functions on the JsonResponse, being dynamically invoked
-            'setStatusCode' => Response::HTTP_NOT_FOUND
-        ],
-
-        /**
-         * Add all the errors from the validation and continue
-         */
-        ValidationException::class => function (ValidationException $e, JsonResponse $json) {
-            $json
-                ->mergeErrors($e->errors())
-                ->setStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
+        YourException::class => [
+            'setStatusCode' => 404,
+            'setMessage' => 'Custom message'
+        ]
     ]
-];
-```
+    ```
+
+4. Stack Traces Not Showing
+    - Ensure your environment is set to 'local'
+    - Check `trace` config is enabled
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This package is open-sourced software licensed under the MIT license.
