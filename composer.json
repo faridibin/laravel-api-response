@@ -19,10 +19,7 @@
 		"psr-4": {
 			"Faridibin\\LaravelApiResponse\\": "src/"
 		},
-		"files": [
-			"src/constants.php",
-			"src/helpers.php"
-		]
+		"files": []
 	},
 	"autoload-dev": {
 		"psr-4": {
@@ -37,7 +34,7 @@
 	"extra": {
 		"laravel": {
 			"providers": [
-				"Faridibin\\LaravelApiResponse\\Providers\\ApiResponseServiceProvider"
+				"Faridibin\\LaravelApiResponse\\ApiResponseServiceProvider"
 			]
 		}
 	},
