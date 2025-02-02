@@ -6,6 +6,7 @@ use Faridibin\LaravelApiResponse\Traits\HasApiResponse;
 use Faridibin\LaravelApiResponse\Interfaces\HandlesResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
+use ReflectionClass;
 
 class ExceptionHandler implements HandlesResponse
 {
@@ -45,9 +46,13 @@ class ExceptionHandler implements HandlesResponse
             if (is_callable($handlers)) {
                 $handlers($exception, $this);
             }
+
+            if ((new ReflectionClass($handlers))->hasMethod('__invoke')) {
+                (new $handlers)($exception, $this);
+            }
         }
 
-        if ($this->shouldTrace()) {
+        if ($this->shouldTrace($exception)) {
             $this->mergeErrors(['trace' => $exception->getTrace()]);
         }
 
@@ -72,11 +77,16 @@ class ExceptionHandler implements HandlesResponse
     }
 
     /**
-     * Determine if the response should trace the data.
+     * Determine if the response should trace the exception.
+     * @param Exception $exception
      * @return bool
      */
-    protected function shouldTrace(): bool
+    protected function shouldTrace(Exception $exception): bool
     {
-        return config('api-response.trace', app()->environment('local'));
+        if (!in_array(get_class($exception), config('api-response.excluded_trace'))) {
+            return config('api-response.trace', app()->environment('local'));
+        }
+
+        return false;
     }
 }
