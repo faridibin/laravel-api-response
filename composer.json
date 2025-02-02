@@ -1,46 +1,45 @@
 {
-    "name": "faridibin/laravel-api-response",
-    "description": "A Laravel package for consistently formatted API responses with support for JSON, XML, and YAML.",
-    "type": "library",
-    "authors": [
-        {
-            "name": "Farid Adam",
-            "email": "faridibin@gmail.com"
-        }
-    ],
-    "license": "MIT",
-    "require": {
-        "symfony/yaml": "^6.3"
-    },
-    "require-dev": {
-        "orchestra/testbench": "^8.6",
-        "nunomaduro/collision": "^7.8"
-    },
-    "autoload": {
-        "psr-4": {
-            "Faridibin\\LaravelApiResponse\\": "src/"
-        },
-        "files": [
-            "src/constants.php",
-            "src/helpers.php"
-        ]
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Faridibin\\LaravelApiResponse\\Tests\\": "tests/"
-        }
-    },
-    "scripts": {
-        "post-autoload-dump": [
-            "@php ./vendor/bin/testbench package:discover --ansi"
-        ]
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Faridibin\\LaravelApiResponse\\Providers\\ApiResponseServiceProvider"
-            ]
-        }
-    },
-    "minimum-stability": "stable"
+	"name": "faridibin/laravel-api-response",
+	"description": "A Laravel package for consistently formatted API responses with support for JSON, XML, and YAML.",
+	"type": "library",
+	"authors": [
+		{
+			"name": "Farid Adam",
+			"email": "faridibin@gmail.com"
+		}
+	],
+	"license": "MIT",
+	"require": {
+		"symfony/yaml": "^7.2"
+	},
+	"require-dev": {
+		"orchestra/testbench": "^9.6"
+	},
+	"autoload": {
+		"psr-4": {
+			"Faridibin\\LaravelApiResponse\\": "src/"
+		},
+		"files": [
+			"src/constants.php",
+			"src/helpers.php"
+		]
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Faridibin\\LaravelApiResponse\\Tests\\": "tests/"
+		}
+	},
+	"scripts": {
+		"post-autoload-dump": [
+			"@php ./vendor/bin/testbench package:discover --ansi"
+		]
+	},
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Faridibin\\LaravelApiResponse\\Providers\\ApiResponseServiceProvider"
+			]
+		}
+	},
+	"minimum-stability": "stable"
 }
