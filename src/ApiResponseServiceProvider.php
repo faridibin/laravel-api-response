@@ -2,7 +2,6 @@
 
 namespace Faridibin\LaravelApiResponse;
 
-// use Faridibin\LaravelApiResponse\Classes\ApiResponse;
 use Illuminate\Support\ServiceProvider;
 
 class ApiResponseServiceProvider extends ServiceProvider
@@ -16,12 +15,6 @@ class ApiResponseServiceProvider extends ServiceProvider
             __DIR__ . '/../config/api-response.php',
             'api-response'
         );
-
-        // 
-
-        // $this->app->singleton(LARAVEL_API_RESPONSE_KEY, function () {
-        //     return new ApiResponse();
-        // });
     }
 
     /**
