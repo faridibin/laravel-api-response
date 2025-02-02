@@ -41,13 +41,9 @@ class ExceptionHandler implements HandlesResponse
                         default => null,
                     };
                 }
-            }
-
-            if (is_callable($handlers)) {
+            } elseif (is_callable($handlers)) {
                 $handlers($exception, $this);
-            }
-
-            if ((new ReflectionClass($handlers))->hasMethod('__invoke')) {
+            } else if ((new ReflectionClass($handlers))->hasMethod('__invoke')) {
                 (new $handlers)($exception, $this);
             }
         }
