@@ -2,22 +2,15 @@
 
 namespace Faridibin\LaravelApiResponse\Http\Middleware;
 
-use Closure;
-use Faridibin\LaravelApiResponse\Traits\HasApiResponse;
+use Faridibin\LaravelApiResponse\Http\ApiResponseHandler;
+use Faridibin\LaravelApiResponse\Exceptions\ExceptionHandler;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Closure;
+use Exception;
 
 class EnsureApiResponse
 {
-    use HasApiResponse;
-
-    /**
-     * The response instance.
-     *
-     * @var mixed
-     */
-    protected mixed $response;
-
     /**
      * Handle an incoming request.
      *
@@ -25,17 +18,34 @@ class EnsureApiResponse
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $this->response = $next($request);
-        dd('here', $this->response);
+        $response = $next($request);
 
-        return $this->makeResponse();
+        if ($response->exception instanceof \Exception) {
+            return $this->handleException($response->exception);
+        }
+
+        return $this->handleResponse($response);
     }
 
     /**
-     * Make the response.
+     * Handle a successful response.
+     * 
+     * @param  \Exception|\Symfony\Component\HttpFoundation\Response  $response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function makeResponse(): Response
+    private function handleResponse(Response $response): Response
     {
-        //
+        return (new ApiResponseHandler)($response);
+    }
+
+    /**
+     * Handle an exception response.
+     * 
+     * @param  \Exception  $exception
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    private function handleException(Exception $exception): Response
+    {
+        return (new ExceptionHandler)($exception);
     }
 }
