@@ -52,6 +52,10 @@ class ExceptionHandler implements HandlesResponse
             $this->mergeErrors(['trace' => $exception->getTrace()]);
         }
 
+        if ($this->getStatusCode() < 400) {
+            $this->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
         return response()->json(
             $this->getResponse(),
             $this->getStatusCode(),

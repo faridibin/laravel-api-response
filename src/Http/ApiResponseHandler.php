@@ -31,6 +31,10 @@ class ApiResponseHandler implements HandlesResponse
             default => $this->mergeData([$content])
         };
 
+        if (method_exists($response, 'getStatusCode')) {
+            $this->setStatusCode($response->getStatusCode());
+        }
+
         return response()->json(
             $this->getResponse(),
             $this->getStatusCode(),
