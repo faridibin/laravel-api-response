@@ -114,4 +114,6 @@ return [
     */
 
     'trace' => (bool) env('APP_DEBUG', false),
+
+    'excluded_trace' => [],
 ];
