@@ -103,6 +103,22 @@ class ApiResponseHandler implements HandlesResponse
      */
     protected function getResourceName(Arrayable $arrayable): string
     {
+        // if ($arrayable->isEmpty()) {
+        //     $resource = basename($arrayable->path());
+        // } else {
+        //     $first = $arrayable->first();
+
+        //     if ($first instanceof Model) {
+        //         $resource = class_basename($first);
+        //     } else {
+        //         $resource = class_basename($arrayable);
+
+        //         $resource = str_replace(['Collection', 'Resource'], '', $resource);
+        //     }
+        // }
+
+        // return (string) Str::of($resource)->plural()->lower();
+
         if ($arrayable->isEmpty()) {
             $resource = basename($arrayable->path());
         } else {
@@ -112,11 +128,10 @@ class ApiResponseHandler implements HandlesResponse
                 $resource = class_basename($first);
             } else {
                 $resource = class_basename($arrayable);
-
                 $resource = str_replace(['Collection', 'Resource'], '', $resource);
             }
         }
 
-        return (string) Str::of($resource)->plural()->lower();
+        return (string) Str::of($resource)->plural()->snake();
     }
 }
