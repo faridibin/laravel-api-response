@@ -112,11 +112,10 @@ class ApiResponseHandler implements HandlesResponse
                 $resource = class_basename($first);
             } else {
                 $resource = class_basename($arrayable);
-
                 $resource = str_replace(['Collection', 'Resource'], '', $resource);
             }
         }
 
-        return (string) Str::of($resource)->plural()->lower();
+        return (string) Str::of($resource)->plural()->snake();
     }
 }
