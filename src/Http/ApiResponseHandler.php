@@ -31,7 +31,7 @@ class ApiResponseHandler implements HandlesResponse
             default => $this->mergeData([$content])
         };
 
-        if (property_exists($response, 'headers')) {
+        if (isset($response->headers)) {
             $this->setHeaders($response->headers->all());
         }
 
